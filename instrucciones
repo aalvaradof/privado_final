@@ -1,20 +1,37 @@
-en la práctica final vamos a tener que organizarnos para poder hacer un sitio web para aficionados de cine donde puedan
-encontrar datos de películas y la distancia que existe entre películas que haya hecho el mismo actor.
+########
+OBJETIVO
+########
+- Hacer un sitio web para aficionados de cine donde puedan encontrar datos de películas y la distancia que existe
+entre películas que haya hecho el mismo actor.
 
-vamos a tener dos fuentes de información que son los ficheros de texto y el código que se adjuntan en el material de la 
-asignatura y la base de datos en sqlite que usamos en el examen llamada DVDrental.
-
-Todo lo que hagamos de esta práctica debe estar enfocado en lo que hemos aprendido de bases de datos y de testing,teniendo
+- Todo lo que hagamos de esta práctica debe estar enfocado en lo que hemos aprendido de bases de datos y de testing,teniendo
 que hacer tests de todos los códigos que usemos y los que escribamos nosotros tendrán que ser con el método de crear los test 
 de caja negra y a partir de ahi escribir el código.
 
- Usaremos travis y heroku
- 
- Es muy importante aislar del core del programa todo aquello que sea específico, por lo que deberemos crear subsistemas que nos 
- hagan dichas funciones como por ejemplo manejar las tablas de sqlite.
- 
- Usaremos spark-java para hacer el diseño web
- 
- Usaremos JDBC para relacionar sql con java
- 
- tendremos que crearnos una ñista de tareas
+
+#####################
+RECURSOS / MATERIALES
+#####################
+- Vamos a tener dos fuentes de información que son los ficheros de texto y el código que se adjuntan en el material de la 
+asignatura y la base de datos en sqlite que usamos en el examen llamada DVDrental.
+
+
+############
+HERRAMIENTAS
+############
+- Usaremos travis y heroku.
+- Usaremos JDBC para relacionar sql con java.
+
+#########
+SITIO WEB
+#########
+- Vamos a usar el framework spark-java.
+
+
+################
+CONSEJOS / OTROS
+################
+- Es muy importante aislar del core del programa todo aquello que sea específico, por lo que deberemos crear subsistemas que nos 
+hagan dichas funciones como por ejemplo manejar las tablas de sqlite.
+
+- Tendremos que crearnos una lista de tareas.
