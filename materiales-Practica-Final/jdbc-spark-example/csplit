@@ -1,0 +1,1 @@
+csplit -n3 ../cast.all.txt 3000 {94}
