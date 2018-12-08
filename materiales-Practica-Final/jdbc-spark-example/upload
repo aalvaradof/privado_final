@@ -1,4 +1,0 @@
-#time for file in xx*; do curl  -F uploaded_films_file=@$file  https://spark-pheras-sqlite.herokuapp.com/upload; done
-
-time for file in xx*; do curl  -F uploaded_films_file=@$file  http://localhost:4567/upload; done
-
