@@ -21,6 +21,15 @@ clientes, empleados, etc.
 
 - Para realizar nuestras pruebas, tendremos que usar un subconjunto de toda la información que hay en "cast.all.txt".
 
+#############
+DOCUMENTACIÓN
+#############
+
+- Despliegue de Herok con Travis:
+https://docs.travis-ci.com/user/deployment/heroku
+
+
+
 ############
 HERRAMIENTAS
 ############
