@@ -1,5 +1,5 @@
 language: java
 
 deploy:
-	provider: heroku
-	app: pfinal
+  provider: heroku
+  app: pfinal
