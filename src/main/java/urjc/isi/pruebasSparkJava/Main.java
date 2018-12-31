@@ -11,7 +11,7 @@ public class Main {
 
 
     public static String home(Request request, Response response) throws ClassNo$
-        String result = new String("TODA LA INFORMACIÓN QUE QUIERAS SOBRE PELÍCU$
+        String result = new String("TODA LA INFORMACIÓN QUE QUIERAS SOBRE PELÍCULAS");
 
         return result;
 
