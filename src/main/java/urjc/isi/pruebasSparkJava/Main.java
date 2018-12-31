@@ -8,6 +8,14 @@ import spark.Response;
 import java.net.URISyntaxException;
 
 public class Main {
+
+
+    public static String home(Request request, Response response) throws ClassNo$
+        String result = new String("TODA LA INFORMACIÓN QUE QUIERAS SOBRE PELÍCU$
+
+        return result;
+
+    }
   
     public static String doWork(Request request, Response response) throws ClassNotFoundException, URISyntaxException {
 	String result = new String("Hello World");
@@ -19,6 +27,7 @@ public class Main {
         port(getHerokuAssignedPort());
 
         // spark server
+        get("/", Main::home);
         get("/hello", Main::doWork);
 
     }
