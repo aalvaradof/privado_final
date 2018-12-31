@@ -10,7 +10,7 @@ import java.net.URISyntaxException;
 public class Main {
 
 
-    public static String home(Request request, Response response) throws ClassNo$
+    public static String home(Request request, Response response) throws ClassNotFoundException, URISyntaxException {
         String result = new String("TODA LA INFORMACIÓN QUE QUIERAS SOBRE PELÍCULAS");
 
         return result;
