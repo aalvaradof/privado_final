@@ -10,14 +10,20 @@ import java.net.URISyntaxException;
 public class Main {
 
 
-    public static String info(Request request, Response response) throws ClassNotFoundException, URISyntaxException {
-        String result = new String("TODA LA INFORMACIÓN QUE QUIERAS SOBRE PELÍCULAS");
+    public static String infoPost(Request request, Response response) throws ClassNotFoundException, URISyntaxException {
+        String result = new String("TODA LA INFORMACIÓN QUE QUIERAS SOBRE PELÍCULAS A TRAVÉS DE UN POST");
 
         return result;
 
     }
 
-  
+    public static String infoGet(Request request, Response response) throws ClassNotFoundException, URISyntaxException {
+        String result = new String("TODA LA INFORMACIÓN QUE QUIERAS SOBRE PELÍCULAS A TRAVÉS DE UN GET");
+
+        return result;
+
+    }
+
     public static String doWork(Request request, Response response) throws ClassNotFoundException, URISyntaxException {
 	String result = new String("Hello World");
 
@@ -46,10 +52,10 @@ public class Main {
 
         // spark server
         get("/", (req, res) -> home);
-        get("/info", Main::info);
+        get("/info", Main::infoGet);
         get("/hello", Main::doWork);
 
-	post("/info", Main::info);
+	post("/info", Main::infoPost);
 
     }
 
