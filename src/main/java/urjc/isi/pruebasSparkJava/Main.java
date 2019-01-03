@@ -126,6 +126,12 @@ public class Main {
                                 "<button type='submit'>Hello</button>" +
                         "</div>" +
 		"</form>" +
+                "<form action='/upload_films' method='get'>" +
+                        "<div class='button'>" +
+                                "Subir fichero con películas: <br/>" +
+                                "<button type='submit'>Upload Films</button>" +
+                        "</div>" +
+                "</form>" +
 	"</body></html>";
 
         // spark server
