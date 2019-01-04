@@ -173,10 +173,10 @@ public class Main {
 	// getPart to retrieve the uploaded file. See next call:
 
 	get("/addfilms", (req, res) ->
-			+"<div style='color:#FFFFFF'>Título de la película a añadir"
-			+"<form action='/addfilms' method='post' enctype='text/plain'>"
-			+"Actor 1: <input type='text' id='actor1' name='actor1'><br>"
-			+"<button>Enviar</button></form></div></body>");
+			"<form action='/addfilms' method='post' enctype='text/plain'>" 
+	    + "    <input type='file' name='Title of the film to add:' accept='.txt'>"
+	    + "    <button>Send</button>" + "</form>");
+
 	//Probando.....
 
 	// Retrieves the file uploaded through the /upload_films HTML form
