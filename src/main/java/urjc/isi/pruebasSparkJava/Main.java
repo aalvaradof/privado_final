@@ -3,102 +3,90 @@ package urjc.isi.pruebasSparkJava;
 import static spark.Spark.*;
 import spark.Request;
 import spark.Response;
-
 import java.net.URISyntaxException;
-
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
-
 import java.util.StringTokenizer;
-
 import javax.servlet.MultipartConfigElement;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-
 public class Main {
 
-
-    public static String infoPost(Request request, Response response) throws ClassNotFoundException, URISyntaxException {
-        String result = new String("TODA LA INFORMACIÓN QUE QUIERAS SOBRE PELÍCULAS A TRAVÉS DE UN POST");
-
+    public static String infoPost(Request request, Response response) throws 
+    		ClassNotFoundException, URISyntaxException {
+        String result = new String("TODA LA INFORMACIÓN QUE QUIERAS SOBRE PELÍCULAS"
+        							+ " A TRAVÉS DE UN POST");
         return result;
-
     }
 
-    public static String infoGet(Request request, Response response) throws ClassNotFoundException, URISyntaxException {
-        String result = new String("TODA LA INFORMACIÓN QUE QUIERAS SOBRE PELÍCULAS A TRAVÉS DE UN GET");
-
+    public static String infoGet(Request request, Response response) throws
+    		ClassNotFoundException, URISyntaxException {
+        String result = new String("TODA LA INFORMACIÓN QUE QUIERAS SOBRE PELÍCULAS"
+        							+ " A TRAVÉS DE UN GET");
         return result;
-
     }
 
-    public static String doWork(Request request, Response response) throws ClassNotFoundException, URISyntaxException {
-	String result = new String("Hello World");
-
-	return result;
+    public static String doWork(Request request, Response response) throws
+    		ClassNotFoundException, URISyntaxException {
+    	String result = new String("Hello World");
+    	return result;
     }
 
-
-
-   
+    
     // Connection to the SQLite database. Used by insert and select methods.
     // Initialized in main
     private static Connection connection;
 
+    
     // Used to illustrate how to route requests to methods instead of
     // using lambda expressions
     public static String doSelect(Request request, Response response) {
-	return select (connection, request.params(":table"), 
-                                   request.params(":film"));
+    	return select (connection, request.params(":table"), request.params(":film"));
     }
 
+    
     public static String select(Connection conn, String table, String film) {
-	String sql = "SELECT * FROM " + table + " WHERE film=?";
-
-	String result = new String();
+    	String sql = "SELECT * FROM " + table + " WHERE film=?";
+    	String result = new String();
 	
-	try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-		pstmt.setString(1, film);
-		ResultSet rs = pstmt.executeQuery();
-                // Commit after query is executed
-		connection.commit();
+    	try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    		pstmt.setString(1, film);
+    		ResultSet rs = pstmt.executeQuery();
+            // Commit after query is executed
+    		connection.commit();
 
-		while (rs.next()) {
-		    // read the result set
-		    result += "film = " + rs.getString("film") + "\n";
-		    System.out.println("film = "+rs.getString("film") + "\n");
+    		while (rs.next()) {
+    			// read the result set
+    			result += "film = " + rs.getString("film") + "\n";
+    			System.out.println("film = "+rs.getString("film") + "\n");
 
-		    result += "actor = " + rs.getString("actor") + "\n";
-		    System.out.println("actor = "+rs.getString("actor")+"\n");
-		}
+    			result += "actor = " + rs.getString("actor") + "\n";
+    			System.out.println("actor = "+rs.getString("actor")+"\n");
+    		}
 	    } catch (SQLException e) {
-	    System.out.println(e.getMessage());
-	}
-	
-	return result;
+	    	System.out.println(e.getMessage());
+	    }
+    	return result;
     }
     
     
     public static void insert(Connection conn, String film, String actor) {
-	String sql = "INSERT INTO films(film, actor) VALUES(?,?)";
+    	String sql = "INSERT INTO films(film, actor) VALUES(?,?)";
 
-	try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-		pstmt.setString(1, film);
-		pstmt.setString(2, actor);
-		pstmt.executeUpdate();
+    	try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    		pstmt.setString(1, film);
+    		pstmt.setString(2, actor);
+    		pstmt.executeUpdate();
 	    } catch (SQLException e) {
-	    System.out.println(e.getMessage());
-	}
+	    	System.out.println(e.getMessage());
+	    }
     }
-
 
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
