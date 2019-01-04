@@ -138,10 +138,10 @@ public class Main {
                                 "<button type='submit'>Upload Films</button>" +
                         "</div>" +
         "</form>" +
-				"<form action='/addfilms' method='post'>" +
+				"<form action='/addfilms' method='get'>" +
                         "<div class='button'>" +
                                 "Añade película: <br/>" +
-                                "<button type='submit'>Upload Films</button>" +
+                                "<button type='submit'>Add Films</button>" +
                         "</div>" +
         "</form>" +
 	"</body></html>";
