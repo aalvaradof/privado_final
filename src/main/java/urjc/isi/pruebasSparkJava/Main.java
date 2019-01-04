@@ -46,11 +46,6 @@ public class Main {
 	return result;
     }
 
-    public static String doAdd(Request request, Response response) throws ClassNotFoundException, URISyntaxException {
-	String result = new String("Añadiendo pelicula");
-
-	return result;
-    }
 
 
    
@@ -172,7 +167,7 @@ public class Main {
 	// getPart to retrieve the uploaded file. See next call:
 
 	get("/addfilms", (req, res) ->
-			+"<div style='color:#FFFFFF'>Añada título de la pelicula:"
+			"<div style='color:#FFFFFF'>Añada título de la pelicula:"
 			+"<form action='/add_film' method='post' enctype='text/plain'>"
 			+"Pelicula: <input type='text' id='pelicula' name='pelicula'><br>"
 			+"<button>Enviar</button></form></div></body>");
@@ -223,9 +218,12 @@ public class Main {
 		    }
 		return result;
 	});
+	
+	post("/add_film", (req, res) -> {
+		String result = "Film added";
+		return result;
+	});
 
-
-    }
 
     static int getHerokuAssignedPort() {
         ProcessBuilder processBuilder = new ProcessBuilder();
