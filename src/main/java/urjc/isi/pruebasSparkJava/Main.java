@@ -58,7 +58,7 @@ public class Main {
     	try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
     		pstmt.setString(1, film);
     		ResultSet rs = pstmt.executeQuery();
-            // Commit after query is executed
+    		// Commit after query is executed
     		connection.commit();
 
     		while (rs.next()) {
@@ -69,9 +69,9 @@ public class Main {
     			result += "actor = " + rs.getString("actor") + "\n";
     			System.out.println("actor = "+rs.getString("actor")+"\n");
     		}
-	    } catch (SQLException e) {
-	    	System.out.println(e.getMessage());
-	    }
+    	} catch (SQLException e) {
+    		System.out.println(e.getMessage());
+    	}
     	return result;
     }
     
