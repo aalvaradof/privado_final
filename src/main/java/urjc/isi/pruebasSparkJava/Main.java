@@ -167,12 +167,16 @@ public class Main {
 	// getPart to retrieve the uploaded file. See next call:
 
 	get("/addfilms", (req, res) ->
-	    "<div style='color:#FFFFFF'>Añada título de la pelicula:"
-	    +"<form action='/add_film' method='post' enctype='text/plain'>"
-	    +"Pelicula: <input type='text' id='pelicula' name='pelicula'><br>"
-	    +"<button>Enviar</button></form></div></body>");
-
-	//Probando.....
+		"<div style='color:#FFFFFF'>Introduzca título de película para añadir:"
+	    + "    <input type='file' name='Title of the film to add:' accept='.txt'>"
+		+"<div style='color:#FFFFFF'>Introduzca año de la película:"
+	    + "    <input type='file' name='Year of the film to add:' accept='.txt'>"
+		+"<div style='color:#FFFFFF'>Introduzca lenguaje de la película:"
+	    + "    <input type='file' name='Language of the film to add:' accept='.txt'>"
+		+"<div style='color:#FFFFFF'>Introduzca actor de la película:"
+	    + "    <input type='file' name='Actor of the film to add:' accept='.txt'>"
+	    + "    <button>Send</button>" + "</form>");
+	//Añadido formulario para añadir películas
 
 	// Retrieves the file uploaded through the /upload_films HTML form
 	// Creates table and stores uploaded file in a two-columns table
@@ -218,11 +222,12 @@ public class Main {
 		    }
 		return result;
 	});
-	
-	post("/add_film", (req, res) -> {
-		String result = "Film added";
-		return result;
+
+	post("/add_films", (req, res) -> {
+		String result = "Uploaded!";
+		return result;	
 	});
+
     }
 
     static int getHerokuAssignedPort() {
