@@ -167,10 +167,10 @@ public class Main {
 	// getPart to retrieve the uploaded file. See next call:
 
 	get("/addfilms", (req, res) ->
-			"<div style='color:#FFFFFF'>Añada título de la pelicula:"
-			+"<form action='/add_film' method='post' enctype='text/plain'>"
-			+"Pelicula: <input type='text' id='pelicula' name='pelicula'><br>"
-			+"<button>Enviar</button></form></div></body>");
+	    "<div style='color:#FFFFFF'>Añada título de la pelicula:"
+	    +"<form action='/add_film' method='post' enctype='text/plain'>"
+	    +"Pelicula: <input type='text' id='pelicula' name='pelicula'><br>"
+	    +"<button>Enviar</button></form></div></body>");
 
 	//Probando.....
 
@@ -223,7 +223,7 @@ public class Main {
 		String result = "Film added";
 		return result;
 	});
-
+    }
 
     static int getHerokuAssignedPort() {
         ProcessBuilder processBuilder = new ProcessBuilder();
