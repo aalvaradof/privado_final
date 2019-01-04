@@ -20,16 +20,16 @@ public class Main {
 
     public static String infoPost(Request request, Response response) throws 
     		ClassNotFoundException, URISyntaxException {
-        String result = new String("TODA LA INFORMACIÓN QUE QUIERAS SOBRE PELÍCULAS"
+    	String result = new String("TODA LA INFORMACIÓN QUE QUIERAS SOBRE PELÍCULAS"
         							+ " A TRAVÉS DE UN POST");
-        return result;
+    	return result;
     }
 
     public static String infoGet(Request request, Response response) throws
     		ClassNotFoundException, URISyntaxException {
-        String result = new String("TODA LA INFORMACIÓN QUE QUIERAS SOBRE PELÍCULAS"
+    	String result = new String("TODA LA INFORMACIÓN QUE QUIERAS SOBRE PELÍCULAS"
         							+ " A TRAVÉS DE UN GET");
-        return result;
+    	return result;
     }
 
     public static String doWork(Request request, Response response) throws
@@ -83,148 +83,141 @@ public class Main {
     		pstmt.setString(1, film);
     		pstmt.setString(2, actor);
     		pstmt.executeUpdate();
-	    } catch (SQLException e) {
-	    	System.out.println(e.getMessage());
-	    }
+    	} catch (SQLException e) {
+    		System.out.println(e.getMessage());
+    	}
     }
 
 
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
-        port(getHerokuAssignedPort());
+    	port(getHerokuAssignedPort());
 
-	// Connect to SQLite sample.db database
-	// connection will be reused by every query in this simplistic example
-	connection = DriverManager.getConnection("jdbc:sqlite:sample.db");
+    	// Connect to SQLite sample.db database
+    	// connection will be reused by every query in this simplistic example
+    	connection = DriverManager.getConnection("jdbc:sqlite:sample.db");
 
-	// SQLite default is to auto-commit (1 transaction / statement execution)
-        // Set it to false to improve performance
-	connection.setAutoCommit(false);
+    	// SQLite default is to auto-commit (1 transaction / statement execution)
+    	// Set it to false to improve performance
+    	connection.setAutoCommit(false);
 
-
-	String home = "<html><body>" +
-	"<h1>Bienvenidos a la web de películas</h1>" +
-		"<form action='/info' method='post'>" +
-			"<div class='button'>" +
-				"Ir a info: <br/>" +
-				"<button type='submit'>Información</button>" +
-			"</div>" +
-		"</form></br>"+
-                "<form action='/hello' method='get'>" +
-                        "<div class='button'>" +
-                                "Ir a helloWorld: <br/>" +
-                                "<button type='submit'>Hello</button>" +
-                        "</div>" +
-		"</form>" +
-                "<form action='/upload_films' method='get'>" +
-                        "<div class='button'>" +
-                                "Subir fichero con películas: <br/>" +
-                                "<button type='submit'>Upload Films</button>" +
-                        "</div>" +
-        "</form>" +
-				"<form action='/addfilms' method='get'>" +
-                        "<div class='button'>" +
-                                "Añade película: <br/>" +
-                                "<button type='submit'>Add Films</button>" +
-                        "</div>" +
-        "</form>" +
-	"</body></html>";
+    	String home = "<html><body>" +
+    		"<h1>Bienvenidos a la web de películas</h1>" +
+    			"<form action='/info' method='post'>" +
+    				"<div class='button'>" +
+    					"Ir a info: <br/>" +
+    					"<button type='submit'>Información</button>" +
+    				"</div>" +
+    			"</form></br>"+
+    			"<form action='/hello' method='get'>" +
+    				"<div class='button'>" +
+    					"Ir a helloWorld: <br/>" +
+    					"<button type='submit'>Hello</button>" +
+    				"</div>" +
+    			"</form>" +
+    			"<form action='/upload_films' method='get'>" +
+    				"<div class='button'>" +
+    					"Subir fichero con películas: <br/>" +
+    					"<button type='submit'>Upload Films</button>" +
+    				"</div>" +
+    			"</form>" +
+    			"<form action='/addfilms' method='get'>" +
+    				"<div class='button'>" +
+    					"Añade película: <br/>" +
+    					"<button type='submit'>Add Films</button>" +
+    				"</div>" +
+    			"</form>" +
+    		"</body></html>";
 
         // spark server
         get("/", (req, res) -> home);
         get("/info", Main::infoGet);
+        post("/info", Main::infoPost);
         get("/hello", Main::doWork);
 
+        // In this case we use a Java 8 method reference to specify
+        // the method to be called when a GET /:table/:film HTTP request
+        // Main::doWork will return the result of the SQL select
+        // query. It could've been programmed using a lambda
+        // expression instead, as illustrated in the next sentence.
+        get("/:table/:film", Main::doSelect);
 
-	post("/info", Main::infoPost);
+        // In this case we use a Java 8 Lambda function to process the
+        // GET /upload_films HTTP request, and we return a form
+        get("/upload_films", (req, res) -> 
+        	"<form action='/upload' method='post' enctype='multipart/form-data'>" 
+        	+ "    <input type='file' name='uploaded_films_file' accept='.txt'>"
+        	+ "    <button>Upload file</button>" + "</form>");
+        // You must use the name "uploaded_films_file" in the call to
+        // getPart to retrieve the uploaded file. See next call:
 
+        get("/addfilms", (req, res) ->
+        	"<div style='color:#1A318C'><b>PÁGINA PARA AÑADIR PELÍCULA A LA BASE DE DATOS:</b>"
+        	+ "<form action='/add_films' method='post' enctype='text/plain'>"
+        	+ "<div style='color:#6C1A8C'>Introduzca título de la película:"
+        	+ "    <input type='text' name='Title of the film to add:' accept='.txt'>"
+        	+ "<div style='color:#6C1A8C'>Introduzca año:"
+        	+ "    <input type='text' name='Year of the film to add:' accept='.txt'>"
+        	+ "<div style='color:#6C1A8C'>Introduzca lenguaje:"
+        	+ "    <input type='text' name='Language of the film to add:' accept='.txt'>"
+        	+ "<div style='color:#6C1A8C'>Introduzca actor:"
+        	+ "    <input type='text' name='Actor of the film to add:' accept='.txt'>"
+        	+ "<p><button>Send</button>" + "</p></form>");
+        //Añadido formulario para añadir películas
 
-	// In this case we use a Java 8 method reference to specify
-	// the method to be called when a GET /:table/:film HTTP request
-	// Main::doWork will return the result of the SQL select
-	// query. It could've been programmed using a lambda
-	// expression instead, as illustrated in the next sentence.
-	get("/:table/:film", Main::doSelect);
+        // Retrieves the file uploaded through the /upload_films HTML form
+        // Creates table and stores uploaded file in a two-columns table
+        post("/upload", (req, res) -> {
+        	req.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/tmp"));
+        	String result = "File uploaded!";
+        	
+        	try (InputStream input = req.raw().getPart("uploaded_films_file").getInputStream()) { 
+        		// getPart needs to use the same name "uploaded_films_file" used in the form
 
-	// In this case we use a Java 8 Lambda function to process the
-	// GET /upload_films HTTP request, and we return a form
-	get("/upload_films", (req, res) -> 
-	    "<form action='/upload' method='post' enctype='multipart/form-data'>" 
-	    + "    <input type='file' name='uploaded_films_file' accept='.txt'>"
-	    + "    <button>Upload file</button>" + "</form>");
-	// You must use the name "uploaded_films_file" in the call to
-	// getPart to retrieve the uploaded file. See next call:
+        		// Prepare SQL to create table
+        		Statement statement = connection.createStatement();
+        		statement.setQueryTimeout(30); // set timeout to 30 sec.
+        		statement.executeUpdate("drop table if exists films");
+        		statement.executeUpdate("create table films (film string, actor string)");
 
-	get("/addfilms", (req, res) ->
-		"<div style='color:#1A318C'><b>PÁGINA PARA AÑADIR PELÍCULA A LA BASE DE DATOS:</b>"
-		+ "<form action='/add_films' method='post' enctype='text/plain'>"
-		+"<div style='color:#6C1A8C'>Introduzca título de la película:"
-	    + "    <input type='text' name='Title of the film to add:' accept='.txt'>"
-		+"<div style='color:#6C1A8C'>Introduzca año:"
-	    + "    <input type='text' name='Year of the film to add:' accept='.txt'>"
-		+"<div style='color:#6C1A8C'>Introduzca lenguaje:"
-	    + "    <input type='text' name='Language of the film to add:' accept='.txt'>"
-		+"<div style='color:#6C1A8C'>Introduzca actor:"
-	    + "    <input type='text' name='Actor of the film to add:' accept='.txt'>"
-		+ "<p><button>Send</button>" + "</p></form>");
-	//Añadido formulario para añadir películas
+        		// Read contents of input stream that holds the uploaded file
+        		InputStreamReader isr = new InputStreamReader(input);
+        		BufferedReader br = new BufferedReader(isr);
+        		String s;
+        		
+        		while ((s = br.readLine()) != null) {
+        			System.out.println(s);
 
-	// Retrieves the file uploaded through the /upload_films HTML form
-	// Creates table and stores uploaded file in a two-columns table
-	post("/upload", (req, res) -> {
-		req.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/tmp"));
-		String result = "File uploaded!";
-		try (InputStream input = req.raw().getPart("uploaded_films_file").getInputStream()) { 
-			// getPart needs to use the same name "uploaded_films_file" used in the form
+        			// Tokenize the film name and then the actors, separated by "/"
+        			StringTokenizer tokenizer = new StringTokenizer(s, "/");
 
-			// Prepare SQL to create table
-			Statement statement = connection.createStatement();
-			statement.setQueryTimeout(30); // set timeout to 30 sec.
-			statement.executeUpdate("drop table if exists films");
-			statement.executeUpdate("create table films (film string, actor string)");
+        			// First token is the film name(year)
+        			String film = tokenizer.nextToken();
 
+        			// Now get actors and insert them
+        			while (tokenizer.hasMoreTokens()) {
+        				insert(connection, film, tokenizer.nextToken());
+        			}
+        			// Commit only once, after all the inserts are done
+        			// If done after each statement performance degrades
+        			connection.commit();
+        		}
+        		input.close();
+        	}
+        	return result;
+        });
 
-			
-			// Read contents of input stream that holds the uploaded file
-			InputStreamReader isr = new InputStreamReader(input);
-			BufferedReader br = new BufferedReader(isr);
-			String s;
-			while ((s = br.readLine()) != null) {
-			    System.out.println(s);
-
-			    // Tokenize the film name and then the actors, separated by "/"
-			    StringTokenizer tokenizer = new StringTokenizer(s, "/");
-
-			    // First token is the film name(year)
-			    String film = tokenizer.nextToken();
-
-
-			    // Now get actors and insert them
-			    while (tokenizer.hasMoreTokens()) {
-				insert(connection, film, tokenizer.nextToken());
-			    }
-			    // Commit only once, after all the inserts are done
-			    // If done after each statement performance degrades
-			    connection.commit();
-
-			    
-			}
-			input.close();
-		    }
-		return result;
-	});
-
-	post("/add_films", (req, res) -> {
-		String result = "Uploaded!";
-		return result;	
-	});
+        post("/add_films", (req, res) -> {
+        	String result = "Uploaded!";
+        	return result;	
+        });
 
     }
 
     static int getHerokuAssignedPort() {
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        if (processBuilder.environment().get("PORT") != null) {
-            return Integer.parseInt(processBuilder.environment().get("PORT"));
-        }
-        return 4567; //return default port if heroku-port isn't set (i.e. on localhost)
+    	ProcessBuilder processBuilder = new ProcessBuilder();
+    	if (processBuilder.environment().get("PORT") != null) {
+    		return Integer.parseInt(processBuilder.environment().get("PORT"));
+    	}
+    	return 4567; //return default port if heroku-port isn't set (i.e. on localhost)
     }
 }
