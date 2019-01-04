@@ -46,6 +46,12 @@ public class Main {
 	return result;
     }
 
+    public static String doAdd(Request request, Response response) throws ClassNotFoundException, URISyntaxException {
+	String result = new String("Añadiendo pelicula");
+
+	return result;
+    }
+
 
    
     // Connection to the SQLite database. Used by insert and select methods.
@@ -131,13 +137,21 @@ public class Main {
                                 "Subir fichero con películas: <br/>" +
                                 "<button type='submit'>Upload Films</button>" +
                         "</div>" +
-                "</form>" +
+        "</form>" +
+				"<form action='/addfilms' method='post'>" +
+                        "<div class='button'>" +
+                                "Añade película: <br/>" +
+                                "<button type='submit'>Upload Films</button>" +
+                        "</div>" +
+        "</form>" +
 	"</body></html>";
 
         // spark server
         get("/", (req, res) -> home);
         get("/info", Main::infoGet);
         get("/hello", Main::doWork);
+        get("/addfilms", Main::doAdd);
+
 
 	post("/info", Main::infoPost);
 
