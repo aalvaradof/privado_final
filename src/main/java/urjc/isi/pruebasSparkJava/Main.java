@@ -46,12 +46,6 @@ public class Main {
 	return result;
     }
 
-    public static String doAdd(Request request, Response response) throws ClassNotFoundException, URISyntaxException {
-	String result = new String("Añadiendo pelicula");
-
-	return result;
-    }
-
 
    
     // Connection to the SQLite database. Used by insert and select methods.
@@ -173,7 +167,7 @@ public class Main {
 	// getPart to retrieve the uploaded file. See next call:
 
 	get("/addfilms", (req, res) ->
-			"<form action='/addfilms' method='post' enctype='text/plain'>" 
+			"<form action='/add_films' method='post' enctype='text/plain'>" 
 	    + "    <input type='file' name='Title of the film to add:' accept='.txt'>"
 	    + "    <button>Send</button>" + "</form>");
 
