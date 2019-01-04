@@ -172,6 +172,12 @@ public class Main {
 	// You must use the name "uploaded_films_file" in the call to
 	// getPart to retrieve the uploaded file. See next call:
 
+	get("/addfilms", (req, res) ->
+			+"<div style='color:#FFFFFF'>Título de la película a añadir"
+			+"<form action='/addfilms' method='post' enctype='text/plain'>"
+			+"Actor 1: <input type='text' id='actor1' name='actor1'><br>"
+			+"<button>Enviar</button></form></div></body>");
+	//Probando.....
 
 	// Retrieves the file uploaded through the /upload_films HTML form
 	// Creates table and stores uploaded file in a two-columns table
