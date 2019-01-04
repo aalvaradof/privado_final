@@ -167,14 +167,14 @@ public class Main {
 	// getPart to retrieve the uploaded file. See next call:
 
 	get("/addfilms", (req, res) ->
-		"<div style='color:#FFFFFF'>Introduzca título de película para añadir:"
-	    + "    <input type='file' name='Title of the film to add:' accept='.txt'>"
-		+"<div style='color:#FFFFFF'>Introduzca año de la película:"
-	    + "    <input type='file' name='Year of the film to add:' accept='.txt'>"
-		+"<div style='color:#FFFFFF'>Introduzca lenguaje de la película:"
-	    + "    <input type='file' name='Language of the film to add:' accept='.txt'>"
-		+"<div style='color:#FFFFFF'>Introduzca actor de la película:"
-	    + "    <input type='file' name='Actor of the film to add:' accept='.txt'>"
+		"<div style='color:#1A318C'>Add movie to data base:"
+	    + "    <input type='text' name='Title of the film to add:' accept='.txt'>"
+		+"<div style='color:#6C1A8C'>Introduzca año de la película:"
+	    + "    <input type='text' name='Year of the film to add:' accept='.txt'>"
+		+"<div style='color:#6C1A8C'>Introduzca lenguaje de la película:"
+	    + "    <input type='text' name='Language of the film to add:' accept='.txt'>"
+		+"<div style='color:#6C1A8C'>Introduzca actor de la película:"
+	    + "    <input type='text' name='Actor of the film to add:' accept='.txt'>"
 	    + "    <button>Send</button>" + "</form>");
 	//Añadido formulario para añadir películas
 
