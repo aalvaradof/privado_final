@@ -17,39 +17,24 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class Main {
-
-    public static String infoPost(Request request, Response response) throws 
-    		ClassNotFoundException, URISyntaxException {
-    	String result = new String("TODA LA INFORMACIÓN QUE QUIERAS SOBRE PELÍCULAS"
-        							+ " A TRAVÉS DE UN POST");
-    	return result;
-    }
-
-    public static String infoGet(Request request, Response response) throws
-    		ClassNotFoundException, URISyntaxException {
-    	String result = new String("TODA LA INFORMACIÓN QUE QUIERAS SOBRE PELÍCULAS"
-        							+ " A TRAVÉS DE UN GET");
-    	return result;
-    }
-
-    public static String doWork(Request request, Response response) throws
-    		ClassNotFoundException, URISyntaxException {
-    	String result = new String("Hello World");
-    	return result;
-    }
-
-    
+	
     // Connection to the SQLite database. Used by insert and select methods.
     // Initialized in main
     private static Connection connection;
-
+	
+    static int getHerokuAssignedPort() {
+    	ProcessBuilder processBuilder = new ProcessBuilder();
+    	if (processBuilder.environment().get("PORT") != null) {
+    		return Integer.parseInt(processBuilder.environment().get("PORT"));
+    	}
+    	return 4567; //return default port if heroku-port isn't set (i.e. on localhost)
+    }
     
     // Used to illustrate how to route requests to methods instead of
     // using lambda expressions
     public static String doSelect(Request request, Response response) {
     	return select (connection, request.params(":table"), request.params(":film"));
     }
-
     
     public static String select(Connection conn, String table, String film) {
     	String sql = "SELECT * FROM " + table + " WHERE film=?";
@@ -75,7 +60,6 @@ public class Main {
     	return result;
     }
     
-    
     public static void insert(Connection conn, String film, String actor) {
     	String sql = "INSERT INTO films(film, actor) VALUES(?,?)";
 
@@ -87,9 +71,30 @@ public class Main {
     		System.out.println(e.getMessage());
     	}
     }
+    
+    public static String infoPost(Request request, Response response) throws 
+    		ClassNotFoundException, URISyntaxException {
+    	String result = new String("TODA LA INFORMACIÓN QUE QUIERAS SOBRE PELÍCULAS"
+        							+ " A TRAVÉS DE UN POST");
+    	return result;
+    }
 
+    public static String infoGet(Request request, Response response) throws
+    		ClassNotFoundException, URISyntaxException {
+    	String result = new String("TODA LA INFORMACIÓN QUE QUIERAS SOBRE PELÍCULAS"
+        							+ " A TRAVÉS DE UN GET");
+    	return result;
+    }
 
+    public static String doWork(Request request, Response response) throws
+    		ClassNotFoundException, URISyntaxException {
+    	String result = new String("Hello World");
+    	return result;
+    }
+
+    
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
+    	// Establecemos el puerto del server con el método getHerokuAssignedPort()
     	port(getHerokuAssignedPort());
 
     	// Connect to SQLite sample.db database
@@ -150,20 +155,6 @@ public class Main {
         // You must use the name "uploaded_films_file" in the call to
         // getPart to retrieve the uploaded file. See next call:
 
-        get("/addfilms", (req, res) ->
-        	"<div style='color:#1A318C'><b>PÁGINA PARA AÑADIR PELÍCULA A LA BASE DE DATOS:</b>"
-        	+ "<form action='/add_films' method='post' enctype='text/plain'>"
-        	+ "<div style='color:#6C1A8C'>Introduzca título de la película:"
-        	+ "    <input type='text' name='Title of the film to add:' accept='.txt'>"
-        	+ "<div style='color:#6C1A8C'>Introduzca año:"
-        	+ "    <input type='text' name='Year of the film to add:' accept='.txt'>"
-        	+ "<div style='color:#6C1A8C'>Introduzca lenguaje:"
-        	+ "    <input type='text' name='Language of the film to add:' accept='.txt'>"
-        	+ "<div style='color:#6C1A8C'>Introduzca actor:"
-        	+ "    <input type='text' name='Actor of the film to add:' accept='.txt'>"
-        	+ "<p><button>Send</button>" + "</p></form>");
-        //Añadido formulario para añadir películas
-
         // Retrieves the file uploaded through the /upload_films HTML form
         // Creates table and stores uploaded file in a two-columns table
         post("/upload", (req, res) -> {
@@ -206,18 +197,24 @@ public class Main {
         	return result;
         });
 
+        get("/addfilms", (req, res) ->
+    		"<div style='color:#1A318C'><b>PÁGINA PARA AÑADIR PELÍCULA A LA BASE DE DATOS:</b>"
+    		+ "<form action='/add_films' method='post' enctype='text/plain'>"
+    		+ "<div style='color:#6C1A8C'>Introduzca título de la película:"
+    		+ "    <input type='text' name='Title of the film to add:' accept='.txt'>"
+    		+ "<div style='color:#6C1A8C'>Introduzca año:"
+    		+ "    <input type='text' name='Year of the film to add:' accept='.txt'>"
+    		+ "<div style='color:#6C1A8C'>Introduzca lenguaje:"
+    		+ "    <input type='text' name='Language of the film to add:' accept='.txt'>"
+    		+ "<div style='color:#6C1A8C'>Introduzca actor:"
+    		+ "    <input type='text' name='Actor of the film to add:' accept='.txt'>"
+    		+ "<p><button>Send</button>" + "</p></form>");
+        //Añadido formulario para añadir películas
+        
         post("/add_films", (req, res) -> {
         	String result = "Uploaded!";
         	return result;	
         });
 
-    }
-
-    static int getHerokuAssignedPort() {
-    	ProcessBuilder processBuilder = new ProcessBuilder();
-    	if (processBuilder.environment().get("PORT") != null) {
-    		return Integer.parseInt(processBuilder.environment().get("PORT"));
-    	}
-    	return 4567; //return default port if heroku-port isn't set (i.e. on localhost)
     }
 }
