@@ -131,6 +131,7 @@ public class Main {
     					"<button type='submit'>Add Films</button>" +
     				"</div>" +
     			"</form>" +
+    			"<a href='/filter'>Filtrado</a>" +
     		"</body></html>";
 
         // spark server
@@ -214,6 +215,20 @@ public class Main {
         post("/add_films", (req, res) -> {
         	String result = "Uploaded!";
         	return result;	
+        });
+        
+        // Recurso /filter encargado de la funcionalidad del filtrado
+        get("/filter", (req, res) ->
+        	"<form action='/filter_film' method='post'>" +
+        		"<label for='film'>Película que desea buscar: </label>" + 
+        		"<input type='text' name='film' id='film'> " +
+        		"<input type='submit' value='Enviar'>" +
+    		"</form>"
+        );
+        
+        post("/filter_film", (req, res) -> {
+        	// Con el atributo queryParams accedemos al valor del parametro "film" del form
+        	return "Has buscado: " + req.queryParams("film");
         });
 
     }
