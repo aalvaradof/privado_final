@@ -27,7 +27,7 @@ public class Main {
     	if (processBuilder.environment().get("PORT") != null) {
     		return Integer.parseInt(processBuilder.environment().get("PORT"));
     	}
-    	return 4567; //return default port if heroku-port isn't set (i.e. on localhost)
+    	return 4600; //return default port if heroku-port isn't set (i.e. on localhost)
     }
     
     // Used to illustrate how to route requests to methods instead of
@@ -200,20 +200,35 @@ public class Main {
 
         get("/addfilms", (req, res) ->
     		"<div style='color:#1A318C'><b>PÁGINA PARA AÑADIR PELÍCULA A LA BASE DE DATOS:</b>"
-    		+ "<form action='/add_films' method='post' enctype='text/plain'>"
-    		+ "<div style='color:#6C1A8C'>Introduzca título de la película:"
-    		+ "    <input type='text' name='Title of the film to add:' accept='.txt'>"
-    		+ "<div style='color:#6C1A8C'>Introduzca año:"
-    		+ "    <input type='text' name='Year of the film to add:' accept='.txt'>"
-    		+ "<div style='color:#6C1A8C'>Introduzca lenguaje:"
-    		+ "    <input type='text' name='Language of the film to add:' accept='.txt'>"
-    		+ "<div style='color:#6C1A8C'>Introduzca actor:"
-    		+ "    <input type='text' name='Actor of the film to add:' accept='.txt'>"
-    		+ "<p><button>Send</button>" + "</p></form>");
-        //Añadido formulario para añadir películas
+    		+"<form action='/add_films' method='post'>" +
+    		"<label for='film'>Película que desea buscar: </label>" + //required: campo obligatorio
+    		"<input type='text' required name='film' id='film'" +
+    		"pattern=[A-Za-z0-9 ].{1,}>" + //Excluimos todos lo que no sean letras y numeros, y no se puede dejar el campo vacio.
+    		"<p></p>"+
+    		"<form action='/add_films' method='post'>" +
+    		"<label for='year'>Año: </label>" + 
+    		"<input type='text' required name='year' id='year'" + //required: Campo obligatorio
+    		"pattern=[0-9]{4}>" + //Solo se pueden introducir 4 cifras
+    		"<p></p>"+
+    		"<form action='/add_films' method='post'>" +
+    		"<label for='language'>Idioma: </label>" + 
+    		"<input type='text' name='language' id='language'" +
+    		"pattern=[A-Za-z]{0,}>" +
+    		"<p></p>"+
+    		"<form action='/add_films' method='post'>" +
+    		"<label for='actor'>Actor: </label>" + 
+    		"<input type='text' name='actor' id='actor'" +
+    		"pattern=[A-Za-z]{0,}>" +
+    		"<p><input type='submit' value='Enviar'></p>" +
+		"</form>");
+        //Incluido formulario para añadir películas
         
         post("/add_films", (req, res) -> {
-        	String result = "Uploaded!";
+        	String result = "Has añadido ->"
+        		+ "</p>pelicula: " + req.queryParams("film")
+        		+ "</p>year: " + req.queryParams("year") 
+        		+ "</p>Idioma: " + req.queryParams("language")
+        		+ "</p>Actor: " + req.queryParams("actor");
         	return result;	
         });
         
@@ -233,3 +248,4 @@ public class Main {
 
     }
 }
+
