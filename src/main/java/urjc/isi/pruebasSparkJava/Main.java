@@ -60,6 +60,7 @@ public class Main {
     	return result;
     }
     
+    
     public static void insert(Connection conn, String film, String actor) {
     	String sql = "INSERT INTO films(film, actor) VALUES(?,?)";
 
@@ -91,7 +92,62 @@ public class Main {
     	String result = new String("Hello World");
     	return result;
     }
-
+    
+    
+    /**
+     * Calcula la distancia entre actores o pelicuas.
+     * @param graph sobre el que calcular la distancia
+     * @param name1 para buscar y comparar
+     * @param name2 para buscar y comparar
+     * @return String con la distancia y la ruta, u otro string en caso de error o 'no ruta'.
+     */
+    public static String doDistance(Graph graph, String name1, String name2) {
+    	if (graph.V() == 0) throw new NullPointerException("Main.doDistance");
+    	
+    	String result = new String("");    	
+    	try {
+	    	if (name1.equals("") || name2.equals("")){ //caso de no introducir nada
+	    		throw new IllegalArgumentException("Main.doDistance");
+	    	}else if (!graph.hasVertex(name1) || !graph.hasVertex(name2)){ //no coincidencia
+				result = nameChecker(name1, name2); //Control de nombres
+			}else{
+				PathFinder pf = new PathFinder(graph, name1);
+				if (pf.hasPathTo(name2)) { //si tenemos ruta, procedemos	
+					System.out.println(pf.hasPathTo(name2));
+					String edge = " --> ";
+					for (String v : pf.pathTo(name2)) {
+						result += v + edge;
+					}       
+					result = result.substring(0, result.length() - edge.length());
+					result += "<br><br>Distancia = " + pf.distanceTo(name2);
+				} else {
+					result = "<p>Ninguna ruta disponible entre " + name1 + " y " + name2 + ".</p>";
+				}
+			}
+    	}catch(IllegalArgumentException e) {
+    		result ="<p>ERROR. Ver 'uso'. Por favor, inténtalo de nuevo.</p>" + 
+    				"<a href='/'>Volver</a>";
+    	}
+		return result;
+	}
+    
+    /**
+     * Comprueba si se han introducido nombres incorrectos/incompletos 
+     * (p.e. 'Crush, Tom' en vez de 'Cruise, Tom', o no coincidente como 'abcd').
+     * @param name1 para buscar y comparar
+     * @param name2 para buscar y comparar
+     * @return Nombres coincidentes con parte de los strings dados (p.e. devuelve todos los
+     * 'Tom' de la tabla, en el caso de haber introducido 'Tom Crush' en vez de 'Tom Cruise'.
+     * Devuelve string de 'no coincidencia' en caso de que no exista nada similar en la BD.
+     */
+    public static String nameChecker(String name1, String name2) {
+    	//por el momento no implementado. Necesitamos BD para Select.
+    	//si no resultados --> result = "no existen nombres name1 y name 2. intentalo de nuevo".
+    	String result = new String("<p>Ninguna ruta disponible entre " + name1 + " y " + 
+    								name2 + ". Error al introducir nombres, o no existen en" +
+    								"nuestra BD</p>");
+    	return result;
+    }
     
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
     	// Establecemos el puerto del server con el método getHerokuAssignedPort()
@@ -99,7 +155,7 @@ public class Main {
 
     	// Connect to SQLite sample.db database
     	// connection will be reused by every query in this simplistic example
-    	connection = DriverManager.getConnection("jdbc:sqlite:sample.db");
+    	connection = DriverManager.getConnection("jdbc:sqlite:Database/IMDb.db");
 
     	// SQLite default is to auto-commit (1 transaction / statement execution)
     	// Set it to false to improve performance
@@ -132,6 +188,8 @@ public class Main {
     				"</div>" +
     			"</form>" +
     			"<a href='/filter'>Filtrado</a>" +
+    			"<br><br>" + 
+				"<a href= '/distance'>Distancia entre actores, películas, directores...<a/>" +
     		"</body></html>";
 
         // spark server
@@ -245,7 +303,49 @@ public class Main {
         	// Con el atributo queryParams accedemos al valor del parametro "film" del form
         	return "Has buscado: " + req.queryParams("film");
         });
-
+        
+        
+        get("/distance", (req, res) -> {
+        	String form = 
+        		"<h3>Calculador de distancias mediante grafos</h3> " +
+        		"<form action='/distance_show' method='post'>" +
+    				"<div>" + 
+    					"<label for='name'>Nombre del actor o película (1): </label>" +
+    					"<input type='text' name='name1'/><br>" +
+    					"<label for='name'>Nombre del actor o película (2): </label>" +
+    					"<input type='text' name='name2'/><br>" +
+    					"<button type='submit'>Enviar</button>" +
+    				"</div>" +
+    			"</form>" +
+        		"<br><p><u>--Uso--</u></p>" + 
+        		"<ul>" + 
+    			  "<li>Pelicula --> (1):'NombrePeli1 (Año)' | (2): 'NombrePeli2 (Año)'" + 
+    			  "<br>Ejemplo: '2001: A Space Odyssey (1968)'</li>" +
+    			  "<br>" +
+    			  "<li>Actor --> (1):'Apellido1, Nombre1' | (2): 'Apellido2, Nombre2" +
+    			  "<br>Ejemplo: 'Travolta, John'</li>" +
+    			"</ul>" +
+        		"*Nota* Si no se sabe el nombre exacto, poner una palabra (p.e. 'Travolta' " +
+    			"u 'Odyssey' en este caso). Se ofreceran las coincidencias de esa palabra.";
+    		return form;
+        });
+        
+        post("/distance_show", (req, res) -> {
+    		Graph graph = new Graph("data/other-data/moviesG.txt", "/");
+    		String name1= req.queryParams("name1");
+    		String name2 = req.queryParams("name2");
+    		String result = doDistance(graph, name1, name2);    		
+        	return "<p>Has buscado la distancia entre: '" + 
+        			name1 + "' y '" + name2 + "'.</p>" +
+        			"<p>RESULTADO:</p>" + 
+        			result;
+        	
+        	//EJEMPLO:
+        	//Travolta, John (That's Dancing! (1985)) --> NAME 1
+        	//Garland, Judy (mago de oz, dancing dancing) --> actriz que relaciona
+        	//Burke, Billie (mago de oz) --> NAME 2
+        	//Distancia 4
+        });
     }
 }
 
