@@ -259,7 +259,7 @@ public class Main {
         get("/addfilms", (req, res) ->
     		"<div style='color:#1A318C'><b>PÁGINA PARA AÑADIR PELÍCULA A LA BASE DE DATOS:</b>"
     		+"<form action='/add_films' method='post'>" +
-    		"<label for='film'>Película que desea buscar: </label>" + //required: campo obligatorio
+    		"<label for='film'>Película que desea añadir: </label>" + //required: campo obligatorio
     		"<input type='text' required name='film' id='film'" +
     		"pattern=[A-Za-z0-9 ].{1,}>" + //Excluimos todos lo que no sean letras y numeros, y no se puede dejar el campo vacio.
     		"<p></p>"+
@@ -269,8 +269,8 @@ public class Main {
     		"pattern=[0-9]{4}>" + //Solo se pueden introducir 4 cifras
     		"<p></p>"+
     		"<form action='/add_films' method='post'>" +
-    		"<label for='language'>Idioma: </label>" + 
-    		"<input type='text' name='language' id='language'" +
+    		"<label for='genres'>Género: </label>" + 
+    		"<input type='text' name='genres' id='genres'" +
     		"pattern=[A-Za-z]{0,}>" +
     		"<p></p>"+
     		"<form action='/add_films' method='post'>" +
@@ -285,7 +285,7 @@ public class Main {
         	String result = "Has añadido ->"
         		+ "</p>pelicula: " + req.queryParams("film")
         		+ "</p>year: " + req.queryParams("year") 
-        		+ "</p>Idioma: " + req.queryParams("language")
+        		+ "</p>Género: " + req.queryParams("genres")
         		+ "</p>Actor: " + req.queryParams("actor");
         	return result;	
         });
