@@ -17,11 +17,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class Main {
-
+	
     // Connection to the SQLite database. Used by insert and select methods.
     // Initialized in main
     private static Connection connection;
-
+	
     static int getHerokuAssignedPort() {
     	ProcessBuilder processBuilder = new ProcessBuilder();
     	if (processBuilder.environment().get("PORT") != null) {
@@ -29,17 +29,17 @@ public class Main {
     	}
     	return 4707; //return default port if heroku-port isn't set (i.e. on localhost)
     }
-
+    
     // Used to illustrate how to route requests to methods instead of
     // using lambda expressions
     public static String doSelect(Request request, Response response) {
     	return select (connection, request.params(":table"), request.params(":film"));
     }
-
+    
     public static String select(Connection conn, String table, String film) {
     	String sql = "SELECT * FROM " + table + " WHERE film=?";
     	String result = new String();
-
+	
     	try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
     		pstmt.setString(1, film);
     		ResultSet rs = pstmt.executeQuery();
@@ -59,7 +59,7 @@ public class Main {
     	}
     	return result;
     }
-
+    
     public static String selectTitle_ID(Connection conn, String table, String data1, String data2, String data3) {
 		String sql="";
     	String result = null;
@@ -96,7 +96,7 @@ public class Main {
     	    return null;
     	}
 }
-
+    
     public static void insert(Connection conn, String film, String actor) {
     	String sql = "INSERT INTO films(film, actor) VALUES(?,?)";
 
@@ -108,7 +108,7 @@ public class Main {
     		System.out.println(e.getMessage());
     	}
     }
-
+    
     public static void insertFilm(Connection conn, String data1, String data2, String data3){
     	String sql="";
 		//Comprobar que todos los elementos son distintos que null
@@ -158,7 +158,8 @@ public class Main {
     	    System.out.println(e.getMessage());
     	}
 }
-    public static String infoPost(Request request, Response response) throws
+    
+    public static String infoPost(Request request, Response response) throws 
     		ClassNotFoundException, URISyntaxException {
     	String result = new String("TODA LA INFORMACIÓN QUE QUIERAS SOBRE PELÍCULAS"
         							+ " A TRAVÉS DE UN POST");
@@ -177,8 +178,8 @@ public class Main {
     	String result = new String("Hello World");
     	return result;
     }
-
-
+    
+    
     /**
      * Calcula la distancia entre actores o pelicuas.
      * @param graph sobre el que calcular la distancia
@@ -188,21 +189,25 @@ public class Main {
      */
     public static String doDistance(Graph graph, String name1, String name2) {
     	if (graph.V() == 0) throw new NullPointerException("Main.doDistance");
-
-    	String result = new String("");
+    	
+    	String result = new String("");    	
     	try {
 	    	if (name1.equals("") || name2.equals("")){ //caso de no introducir nada
 	    		throw new IllegalArgumentException("Main.doDistance");
-	    	}else if (!graph.hasVertex(name1) || !graph.hasVertex(name2)){ //no coincidencia
-				result = nameChecker(name1, name2); //Control de nombres
+	    	}else if (!graph.hasVertex(name1) && !graph.hasVertex(name2)){ //caso 2 erroneos
+	    		result = "<p>Campo 1: </p>" + nameChecker(connection, name1);
+	    		result += "<p>Campo 2: </p>" + nameChecker(connection, name2); 
+	    	}else if (!graph.hasVertex(name1)){ //no coincidencia nombre1
+				result = "<p>Campo 1: </p>" + nameChecker(connection, name1); //Control de nombres
+	    	}else if (!graph.hasVertex(name2)){ //no coincidencia nombre2
+	    		result = "<p>Campo 2: </p>" + nameChecker(connection, name2);
 			}else{
 				PathFinder pf = new PathFinder(graph, name1);
-				if (pf.hasPathTo(name2)) { //si tenemos ruta, procedemos
-					System.out.println(pf.hasPathTo(name2));
+				if (pf.hasPathTo(name2)) { //si tenemos ruta, procedemos	
 					String edge = " --> ";
 					for (String v : pf.pathTo(name2)) {
 						result += v + edge;
-					}
+					}       
 					result = result.substring(0, result.length() - edge.length());
 					result += "<br><br>Distancia = " + pf.distanceTo(name2);
 				} else {
@@ -210,30 +215,66 @@ public class Main {
 				}
 			}
     	}catch(IllegalArgumentException e) {
-    		result ="<p>ERROR. Ver 'uso'. Por favor, inténtalo de nuevo.</p>" +
-    				"<a href='/'>Volver</a>";
+    		result ="<p>ERROR. Ver 'uso'. Por favor, inténtalo de nuevo.</p>";
     	}
 		return result;
 	}
-
+    
     /**
-     * Comprueba si se han introducido nombres incorrectos/incompletos
-     * (p.e. 'Crush, Tom' en vez de 'Cruise, Tom', o no coincidente como 'abcd').
-     * @param name1 para buscar y comparar
-     * @param name2 para buscar y comparar
+     * Comprueba si se han introducido nombres incorrectos/incompletos 
+     * (p.e. 'Tom', en vez de 'Tom Cruise', o no coincidente como 'abcd').
+     * @param name para buscar y comparar.
      * @return Nombres coincidentes con parte de los strings dados (p.e. devuelve todos los
-     * 'Tom' de la tabla, en el caso de haber introducido 'Tom Crush' en vez de 'Tom Cruise'.
+     * 'Tom' de la tabla, en el caso de haber introducido 'Tom' en vez de 'Tom Cruise').
      * Devuelve string de 'no coincidencia' en caso de que no exista nada similar en la BD.
      */
-    public static String nameChecker(String name1, String name2) {
-    	//por el momento no implementado. Necesitamos BD para Select.
-    	//si no resultados --> result = "no existen nombres name1 y name 2. intentalo de nuevo".
-    	String result = new String("<p>Ninguna ruta disponible entre " + name1 + " y " +
-    								name2 + ". Error al introducir nombres, o no existen en" +
-    								"nuestra BD</p>");
+    public static String nameChecker(Connection conn, String name){
+    	String sql = "SELECT title FROM movies " + //consulta para nombre_pelis
+    			"WHERE title LIKE ?";
+    	String sql2 = "SELECT primaryName FROM workers " + //consulta para nombre_actores
+    			"WHERE primaryName LIKE ?";
+    	
+    	String result = new String();
+    	try {
+    	PreparedStatement pstmt = conn.prepareStatement(sql);
+    	pstmt.setString(1, "%" + name + "%");
+    	PreparedStatement pstmt2 = conn.prepareStatement(sql2);
+		pstmt2.setString(1, "%" + name + "%");
+    	ResultSet rs = pstmt.executeQuery();
+    	
+    		if(rs.next()) { //pelis
+    			result += "<p>Múltiples coincidencias. Copia nombre exacto para cálculo de distancia:</p>" +
+    					"<p>Películas coincidentes:</p><ul>";
+    			do{
+    				result += "<li>" + rs.getString(1) + "</li>"; 
+    			}while(rs.next());
+    			result += "</ul>";
+    		}else {
+    			ResultSet rs2 = pstmt2.executeQuery(); //ejecutamos aqui la segunda query, para no matar la primera
+    			if (rs2.next()) { //actores
+    				result += "<p>Múltiples coincidencias. Copia nombre exacto para cálculo de distancia:</p>" +
+    						"<p>Actores coincidentes:</p><ul>";
+        			do{
+        				result += "<li>" + rs2.getString(1) + "</li>"; 
+        			}while(rs2.next()); 
+        			result += "</ul>";
+    			}else {
+    				result += "<p>Ninguna ruta disponible entre " +
+    						"ambos actores/peliculas. Error al introducir nombres," +
+    						"o no existen en nuestra BD</p>" + 
+    						"<br>";
+    			}
+    			
+    		}
+    	} catch (SQLException e) {
+    		System.out.println(e.getMessage());
+    	}
+    		
     	return result;
     }
-
+    
+    
+//MAIN---
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
     	// Establecemos el puerto del server con el método getHerokuAssignedPort()
     	port(getHerokuAssignedPort());
@@ -273,7 +314,7 @@ public class Main {
     				"</div>" +
     			"</form>" +
     			"<a href='/filter'>Filtrado</a>" +
-    			"<br><br>" +
+    			"<br><br>" + 
 				"<a href= '/distance'>Distancia entre actores, películas, directores...<a/>" +
     		"</body></html>";
 
@@ -292,8 +333,8 @@ public class Main {
 
         // In this case we use a Java 8 Lambda function to process the
         // GET /upload_films HTTP request, and we return a form
-        get("/upload_films", (req, res) ->
-        	"<form action='/upload' method='post' enctype='multipart/form-data'>"
+        get("/upload_films", (req, res) -> 
+        	"<form action='/upload' method='post' enctype='multipart/form-data'>" 
         	+ "    <input type='file' name='uploaded_films_file' accept='.txt'>"
         	+ "    <button>Upload file</button>" + "</form>");
         // You must use the name "uploaded_films_file" in the call to
@@ -304,8 +345,8 @@ public class Main {
         post("/upload", (req, res) -> {
         	req.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/tmp"));
         	String result = "File uploaded!";
-
-        	try (InputStream input = req.raw().getPart("uploaded_films_file").getInputStream()) {
+        	
+        	try (InputStream input = req.raw().getPart("uploaded_films_file").getInputStream()) { 
         		// getPart needs to use the same name "uploaded_films_file" used in the form
 
         		// Prepare SQL to create table
@@ -318,7 +359,7 @@ public class Main {
         		InputStreamReader isr = new InputStreamReader(input);
         		BufferedReader br = new BufferedReader(isr);
         		String s;
-
+        		
         		while ((s = br.readLine()) != null) {
         			System.out.println(s);
 
@@ -349,28 +390,28 @@ public class Main {
     		"pattern=[A-Za-z0-9 ].{1,}>" + //Excluimos todos lo que no sean letras y numeros, y no se puede dejar el campo vacio.
     		"<p></p>"+
     		"<form action='/add_films' method='post'>" +
-    		"<label for='year'>Año: </label>" +
+    		"<label for='year'>Año: </label>" + 
     		"<input type='text' required name='year' id='year'" + //required: Campo obligatorio
     		"pattern=[0-9]{4}>" + //Solo se pueden introducir 4 cifras
     		"<p></p>"+
     		"<form action='/add_films' method='post'>" +
-    		"<label for='genres'>Género: </label>" +
+    		"<label for='genres'>Género: </label>" + 
     		"<input type='text' name='genres' id='genres'" +
     		"pattern=[A-Za-z]{0,}>" +
     		"<p></p>"+
     		"<form action='/add_films' method='post'>" +
-    		"<label for='actor'>Actor: </label>" +
+    		"<label for='actor'>Actor: </label>" + 
     		"<input type='text' name='actor' id='actor'" +
     		"pattern=[A-Za-z]{0,}>" +
     		"<p><input type='submit' value='Enviar'></p>" +
-		"</form>"
-		+ "<p>Implementada funcionalidad a espera de solucionar problemas con upload films debido al límite de peliculas</p>");
+    		"</form>"
+    		+ "<p>Implementada funcionalidad a espera de solucionar problemas con upload films debido al límite de peliculas</p>");
         //Incluido formulario para añadir películas
-
+        
         post("/add_films", (req, res) -> {
         	String result = "Has añadido ->"
         		+ "</p>pelicula: " + req.queryParams("film")
-        		+ "</p>year: " + req.queryParams("year")
+        		+ "</p>year: " + req.queryParams("year") 
         		+ "</p>Género: " + req.queryParams("genres")
         		+ "</p>Actor: " + req.queryParams("actor");
         	insertFilm(connection, req.queryParams("film")
@@ -379,29 +420,29 @@ public class Main {
         	insertActor(connection, req.queryParams("actor"));
         	String name_ID = selectName_ID(connection, "workers", req.queryParams("actor"));
         	//insertWorks_In(connection, title_ID, name_ID);
-        	return result;
+        	return result;	
         });
-
+        
         // Recurso /filter encargado de la funcionalidad del filtrado
         get("/filter", (req, res) ->
         	"<form action='/filter_film' method='post'>" +
-        		"<label for='film'>Película que desea buscar: </label>" +
+        		"<label for='film'>Película que desea buscar: </label>" + 
         		"<input type='text' name='film' id='film'> " +
         		"<input type='submit' value='Enviar'>" +
     		"</form>"
         );
-
+        
         post("/filter_film", (req, res) -> {
         	// Con el atributo queryParams accedemos al valor del parametro "film" del form
         	return "Has buscado: " + req.queryParams("film");
         });
-
-
+        
+        
         get("/distance", (req, res) -> {
-        	String form =
+        	String form = 
         		"<h3>Calculador de distancias mediante grafos</h3> " +
         		"<form action='/distance_show' method='post'>" +
-    				"<div>" +
+    				"<div>" + 
     					"<label for='name'>Nombre del actor o película (1): </label>" +
     					"<input type='text' name='name1'/><br>" +
     					"<label for='name'>Nombre del actor o película (2): </label>" +
@@ -409,34 +450,43 @@ public class Main {
     					"<button type='submit'>Enviar</button>" +
     				"</div>" +
     			"</form>" +
-        		"<br><p><u>--Uso--</u></p>" +
-        		"<ul>" +
-    			  "<li>Pelicula --> (1):'NombrePeli1 (Año)' | (2): 'NombrePeli2 (Año)'" +
-    			  "<br>Ejemplo: '2001: A Space Odyssey (1968)'</li>" +
+        		"<br><p><u>--Uso--</u></p>" + 
+        		"<ul>" + 
+    			  "<li>Pelicula --> (1):'NombrePeli1' | (2): 'NombrePeli2'" + 
+    			  "<br>Ejemplo: 'The Great Gatsby'</li>" +
     			  "<br>" +
-    			  "<li>Actor --> (1):'Apellido1, Nombre1' | (2): 'Apellido2, Nombre2" +
-    			  "<br>Ejemplo: 'Travolta, John'</li>" +
+    			  "<li>Actor --> (1):'Nombre1 Apellido1' | (2): 'Nombre2 Apellido2'" +
+    			  "<br>Ejemplo: 'Leonardo DiCaprio'</li>" +
     			"</ul>" +
         		"*Nota* Si no se sabe el nombre exacto, poner una palabra (p.e. 'Travolta' " +
-    			"u 'Odyssey' en este caso). Se ofreceran las coincidencias de esa palabra.";
+    			"u 'Odyssey' en este caso). Se ofreceran las coincidencias de esa palabra (en progreso).";
     		return form;
         });
-
+        
         post("/distance_show", (req, res) -> {
-    		Graph graph = new Graph("data/other-data/moviesG.txt", "/");
+        	Graph graph = new Graph("Database/film_actors.txt", "/");
+    		//Graph graph = new Graph("data/other-data/moviesG.txt", "/"); para antigüa tabla
     		String name1= req.queryParams("name1");
     		String name2 = req.queryParams("name2");
-    		String result = doDistance(graph, name1, name2);
-        	return "<p>Has buscado la distancia entre: '" +
+    		String result = doDistance(graph, name1, name2);    		
+        	return "<p>Has buscado la distancia entre: '" + 
         			name1 + "' y '" + name2 + "'.</p>" +
-        			"<p>RESULTADO:</p>" +
-        			result;
-
-        	//EJEMPLO:
+        			"<p>RESULTADO:</p>" + 
+        			result + 
+        			"<br><a href='/'>Volver</a>";
+        	
+        	//EJEMPLO (con moviesG.txt):
         	//Travolta, John (That's Dancing! (1985)) --> NAME 1
         	//Garland, Judy (mago de oz, dancing dancing) --> actriz que relaciona
         	//Burke, Billie (mago de oz) --> NAME 2
         	//Distancia 4
+        	
+        	//EJEMPLO (con film_actors.txt):
+        	//Leonardo DiCaprio | The Great Gatsby --> NAME 1
+        	//Tobey Maguire | The Great Gatsby / Spiderman --> actor que relaciona
+        	//Willem Dafoe (Spiderman) --> NAME 2
+        	//Distancia 4
         });
     }
 }
+
