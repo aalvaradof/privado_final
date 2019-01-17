@@ -108,10 +108,13 @@ public class Main {
     	try {
 	    	if (name1.equals("") || name2.equals("")){ //caso de no introducir nada
 	    		throw new IllegalArgumentException("Main.doDistance");
-	    	}else if (!graph.hasVertex(name1) || !graph.hasVertex(name2)){ //no coincidencia
-	    		System.out.println(graph.hasVertex(name1));
-	    		System.out.println(graph.hasVertex(name2));
-				//result = nameChecker(name1, name2); //Control de nombres
+	    	}else if (!graph.hasVertex(name1) && !graph.hasVertex(name2)){ //caso 2 erroneos
+	    		result = "<p>Campo 1: </p>" + nameChecker(connection, name1);
+	    		result += "<p>Campo 2: </p>" + nameChecker(connection, name2); 
+	    	}else if (!graph.hasVertex(name1)){ //no coincidencia nombre1
+				result = "<p>Campo 1: </p>" + nameChecker(connection, name1); //Control de nombres
+	    	}else if (!graph.hasVertex(name2)){ //no coincidencia nombre2
+	    		result = "<p>Campo 2: </p>" + nameChecker(connection, name2);
 			}else{
 				PathFinder pf = new PathFinder(graph, name1);
 				if (pf.hasPathTo(name2)) { //si tenemos ruta, procedemos	
@@ -133,20 +136,63 @@ public class Main {
     
     /**
      * Comprueba si se han introducido nombres incorrectos/incompletos 
-     * (p.e. 'Crush, Tom' en vez de 'Cruise, Tom', o no coincidente como 'abcd').
-     * @param name1 para buscar y comparar
-     * @param name2 para buscar y comparar
+     * (p.e. 'Tom', en vez de 'Tom Cruise', o no coincidente como 'abcd').
+     * @param name para buscar y comparar
      * @return Nombres coincidentes con parte de los strings dados (p.e. devuelve todos los
-     * 'Tom' de la tabla, en el caso de haber introducido 'Tom Crush' en vez de 'Tom Cruise'.
+     * 'Tom' de la tabla, en el caso de haber introducido 'Tom' en vez de 'Tom Cruise'.
      * Devuelve string de 'no coincidencia' en caso de que no exista nada similar en la BD.
      */
-    public static String nameChecker(String name1, String name2) {
+    public static String nameChecker(Connection conn, String name){
     	//por el momento no implementado. Necesitamos BD para Select.
-    	//si no resultados --> result = "no existen nombres name1 y name 2. intentalo de nuevo".
-    	String result = new String("<p>Ninguna ruta disponible entre '" + name1 + "' y '" + 
-    								name2 + "'. Error al introducir nombres, o no existen en " +
-    								"nuestra BD</p>");
+    	//dos opciones: introducir solo una palabra
+    	//introducir todo, aunque sea mal
+    	String sql = "SELECT title FROM movies " + //consulta para nombre_pelis
+    			"WHERE title LIKE ?"; // + name + "%'";
+    	String sql2 = "SELECT primaryName FROM workers " + //consulta para nombre_actores
+    			"WHERE primaryName LIKE ?"; // + name + "%'";
+    	
+    	String result = new String();
+    	try {
+    	PreparedStatement pstmt = conn.prepareStatement(sql);
+    	pstmt.setString(1, "%" + name + "%");
+    	PreparedStatement pstmt2 = conn.prepareStatement(sql2);
+		pstmt2.setString(1, "%" + name + "%");
+    	ResultSet rs = pstmt.executeQuery();
+    	
+    		if(rs.next()) { //pelis
+    			result += "<p>Múltiples coincidencias. Copia nombre exacto:</p>" +
+    					"<p>Películas coincidentes:</p><ul>";
+    			do{
+    				result += "<li>" + rs.getString(1) + "</li>"; 
+    			}while(rs.next());
+    			result += "</ul>";
+    		}else {
+    			ResultSet rs2 = pstmt2.executeQuery(); //ejecutamos aqui la segunda query, para no matar la primera
+    			if (rs2.next()) { //actores
+    				result += "<p>Múltiples coincidencias. Copia nombre exacto:</p>" +
+    						"<p>Actores coincidentes:</p><ul>";
+        			do{
+        				result += "<li>" + rs2.getString(1) + "</li>"; 
+        			}while(rs2.next()); 
+        			result += "</ul>";
+    			}else {
+    				result += "<p>Ninguna ruta disponible entre " +
+    						"ambos actores/peliculas. Error al introducir nombres," +
+    						"o no existen en nuestra BD</p>" + 
+    						"<br>";
+    			}
+    			
+    		}
+    	} catch (SQLException e) {
+    		System.out.println(e.getMessage());
+    	}
+    		
     	return result;
+    }
+    
+    
+    public static String nameMatch(String name1) {
+    	return "";
     }
     
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
@@ -319,14 +365,14 @@ public class Main {
     			"</form>" +
         		"<br><p><u>--Uso--</u></p>" + 
         		"<ul>" + 
-    			  "<li>Pelicula --> (1):'NombrePeli1 (Año)' | (2): 'NombrePeli2 (Año)'" + 
-    			  "<br>Ejemplo: '2001: A Space Odyssey (1968)'</li>" +
+    			  "<li>Pelicula --> (1):'NombrePeli1' | (2): 'NombrePeli2'" + 
+    			  "<br>Ejemplo: 'The Great Gatsby'</li>" +
     			  "<br>" +
-    			  "<li>Actor --> (1):'Apellido1, Nombre1' | (2): 'Apellido2, Nombre2" +
-    			  "<br>Ejemplo: 'Travolta, John'</li>" +
+    			  "<li>Actor --> (1):'Nombre1 Apellido1' | (2): 'Nombre2 Apellido2'" +
+    			  "<br>Ejemplo: 'Leonardo DiCaprio'</li>" +
     			"</ul>" +
         		"*Nota* Si no se sabe el nombre exacto, poner una palabra (p.e. 'Travolta' " +
-    			"u 'Odyssey' en este caso). Se ofreceran las coincidencias de esa palabra.";
+    			"u 'Odyssey' en este caso). Se ofreceran las coincidencias de esa palabra (en progreso).";
     		return form;
         });
         
