@@ -109,11 +109,12 @@ public class Main {
 	    	if (name1.equals("") || name2.equals("")){ //caso de no introducir nada
 	    		throw new IllegalArgumentException("Main.doDistance");
 	    	}else if (!graph.hasVertex(name1) || !graph.hasVertex(name2)){ //no coincidencia
-				result = nameChecker(name1, name2); //Control de nombres
+	    		System.out.println(graph.hasVertex(name1));
+	    		System.out.println(graph.hasVertex(name2));
+				//result = nameChecker(name1, name2); //Control de nombres
 			}else{
 				PathFinder pf = new PathFinder(graph, name1);
 				if (pf.hasPathTo(name2)) { //si tenemos ruta, procedemos	
-					System.out.println(pf.hasPathTo(name2));
 					String edge = " --> ";
 					for (String v : pf.pathTo(name2)) {
 						result += v + edge;
@@ -330,7 +331,8 @@ public class Main {
         });
         
         post("/distance_show", (req, res) -> {
-    		Graph graph = new Graph("data/other-data/moviesG.txt", "/");
+        	Graph graph = new Graph("Database/film_actors.txt", "/");
+    		//Graph graph = new Graph("data/other-data/moviesG.txt", "/");
     		String name1= req.queryParams("name1");
     		String name2 = req.queryParams("name2");
     		String result = doDistance(graph, name1, name2);    		
@@ -340,10 +342,16 @@ public class Main {
         			result + 
         			"<br><a href='/'>Volver</a>";
         	
-        	//EJEMPLO:
+        	//EJEMPLO (con moviesG.txt):
         	//Travolta, John (That's Dancing! (1985)) --> NAME 1
         	//Garland, Judy (mago de oz, dancing dancing) --> actriz que relaciona
         	//Burke, Billie (mago de oz) --> NAME 2
+        	//Distancia 4
+        	
+        	//EJEMPLO (con film_actors.txt):
+        	//Leonardo DiCaprio | The Great Gatsby --> NAME 1
+        	//Tobey Maguire | The Great Gatsby / Spiderman --> actor que relaciona
+        	//Willem Dafoe (Spiderman) --> NAME 2
         	//Distancia 4
         });
     }
