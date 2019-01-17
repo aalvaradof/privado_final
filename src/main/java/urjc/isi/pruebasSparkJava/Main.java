@@ -125,8 +125,7 @@ public class Main {
 				}
 			}
     	}catch(IllegalArgumentException e) {
-    		result ="<p>ERROR. Ver 'uso'. Por favor, inténtalo de nuevo.</p>" + 
-    				"<a href='/'>Volver</a>";
+    		result ="<p>ERROR. Ver 'uso'. Por favor, inténtalo de nuevo.</p>";
     	}
 		return result;
 	}
@@ -143,8 +142,8 @@ public class Main {
     public static String nameChecker(String name1, String name2) {
     	//por el momento no implementado. Necesitamos BD para Select.
     	//si no resultados --> result = "no existen nombres name1 y name 2. intentalo de nuevo".
-    	String result = new String("<p>Ninguna ruta disponible entre " + name1 + " y " + 
-    								name2 + ". Error al introducir nombres, o no existen en" +
+    	String result = new String("<p>Ninguna ruta disponible entre '" + name1 + "' y '" + 
+    								name2 + "'. Error al introducir nombres, o no existen en " +
     								"nuestra BD</p>");
     	return result;
     }
@@ -338,7 +337,8 @@ public class Main {
         	return "<p>Has buscado la distancia entre: '" + 
         			name1 + "' y '" + name2 + "'.</p>" +
         			"<p>RESULTADO:</p>" + 
-        			result;
+        			result + 
+        			"<br><a href='/'>Volver</a>";
         	
         	//EJEMPLO:
         	//Travolta, John (That's Dancing! (1985)) --> NAME 1
