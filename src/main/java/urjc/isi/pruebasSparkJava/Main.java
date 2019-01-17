@@ -433,8 +433,38 @@ public class Main {
         );
         
         post("/filter_film", (req, res) -> {
-        	// Con el atributo queryParams accedemos al valor del parametro "film" del form
-        	return "Has buscado: " + req.queryParams("film");
+        	// Para acceder al valor del parametro "film" del form:
+        	// req.queryParams("film") => hay que pasarselo a la función que busque en la BD.
+        	
+        	// Los siguientes valores están puestos a modo de prueba. Hay que
+        	// sustituirlos por los valores que devuelva la función que busque en la BD.
+        	String titulo = "titulo de prueba";
+        	String año = "año de prueba";
+        	String duracion = "duracion de prueba";
+        	String puntuacionMedia = "puntuacion media de prueba";
+        	String numVotos = "numero de votos de prueba";
+        	String generos = "generos de prueba";
+        	
+        	String tabla = "<table border=2" +
+        						"<tr>" +
+        							"<th>Título</th>" +
+        							"<th>Año</th>" +
+        							"<th>Duración</th>" +
+          							"<th>Puntuación media</th>" +
+          							"<th>Número de votos</th>" +
+          							"<th>Géneros</th>" +
+        						"</tr>" +
+        						"<tr>" +
+        							"<td>" + titulo + "</td>" +
+        							"<td>" + año + "</td>" +
+        							"<td>" + duracion + "</td>" +
+        							"<td>" + puntuacionMedia + "</td>" +
+        							"<td>" + numVotos + "</td>" +
+        							"<td>" + generos + "</td>" +
+
+        						"</tr>" +
+        					"</table>";
+        	return tabla;
         });
         
         
