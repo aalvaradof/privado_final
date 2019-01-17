@@ -27,7 +27,7 @@ public class Main {
     	if (processBuilder.environment().get("PORT") != null) {
     		return Integer.parseInt(processBuilder.environment().get("PORT"));
     	}
-    	return 4600; //return default port if heroku-port isn't set (i.e. on localhost)
+    	return 4707; //return default port if heroku-port isn't set (i.e. on localhost)
     }
     
     // Used to illustrate how to route requests to methods instead of
@@ -60,6 +60,42 @@ public class Main {
     	return result;
     }
     
+    public static String selectTitle_ID(Connection conn, String table, String data1, String data2, String data3) {
+		String sql="";
+    	String result = null;
+    		sql = "SELECT * FROM " + table + " WHERE title=? AND year=? AND genres=?";
+    	try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    		pstmt.setString(1, data1);
+    		pstmt.setString(2, data2);
+    		pstmt.setString(2, data3);
+    		ResultSet rs = pstmt.executeQuery();
+    		while (rs.next()) {
+    		    // read the result set
+    		    result = rs.getString("titleID");
+    		}
+    		return result;
+    	} catch (SQLException e) {
+    	    System.out.println(e.getMessage());
+    	    return null;
+    	}
+}
+    public static String selectName_ID(Connection conn, String table, String data1) {
+		String sql="";
+    	String result = null;
+    		sql = "SELECT * FROM " + table + " WHERE primaryName=?";
+    	try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    		pstmt.setString(1, data1);
+    		ResultSet rs = pstmt.executeQuery();
+    		while (rs.next()) {
+    		    // read the result set
+    		    result = rs.getString("nameID");
+    		}
+    		return result;
+    	} catch (SQLException e) {
+    	    System.out.println(e.getMessage());
+    	    return null;
+    	}
+}
     
     public static void insert(Connection conn, String film, String actor) {
     	String sql = "INSERT INTO films(film, actor) VALUES(?,?)";
@@ -73,6 +109,55 @@ public class Main {
     	}
     }
     
+    public static void insertFilm(Connection conn, String data1, String data2, String data3){
+    	String sql="";
+		//Comprobar que todos los elementos son distintos que null
+    	if(data1 == null){
+    		throw new NullPointerException();
+    	}
+    		sql = "INSERT INTO movies (title, year, genres) VALUES(?,?,?)";
+    		
+    	try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    		pstmt.setString(1, data1);
+    		pstmt.setString(2, data2);
+    		pstmt.setString(3, data3);
+    		pstmt.executeUpdate();
+    	} catch (SQLException e) {
+    	    System.out.println(e.getMessage());
+    	}
+}
+    
+    public static void insertActor(Connection conn, String data1){
+    	String sql="";
+		//Comprobar que todos los elementos son distintos que null
+    	if(data1 == null){
+    		throw new NullPointerException();
+    	}
+    		sql = "INSERT INTO workers (primaryName) VALUES(?)";
+
+    	try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    		pstmt.setString(1, data1);
+    		pstmt.executeUpdate();
+    	} catch (SQLException e) {
+    	    System.out.println(e.getMessage());
+    	}
+}
+    public static void insertWorks_In(Connection conn, String data1, String data2){
+    	String sql="";
+		//Comprobar que todos los elementos son distintos que null
+    	if(data1 == null || data2 == null){
+    		throw new NullPointerException();
+    	}
+    		sql = "INSERT INTO works_in (titleID, nameID) VALUES(?,?)";
+
+    	try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    		pstmt.setString(1, data1);
+    		pstmt.setString(2, data2);
+    		pstmt.executeUpdate();
+    	} catch (SQLException e) {
+    	    System.out.println(e.getMessage());
+    	}
+}
     public static String infoPost(Request request, Response response) throws 
     		ClassNotFoundException, URISyntaxException {
     	String result = new String("TODA LA INFORMACIÓN QUE QUIERAS SOBRE PELÍCULAS"
@@ -278,7 +363,8 @@ public class Main {
     		"<input type='text' name='actor' id='actor'" +
     		"pattern=[A-Za-z]{0,}>" +
     		"<p><input type='submit' value='Enviar'></p>" +
-		"</form>");
+		"</form>"
+		+ "<p>Implementada funcionalidad a espera de solucionar problemas con upload films debido al límite de peliculas</p>");
         //Incluido formulario para añadir películas
         
         post("/add_films", (req, res) -> {
@@ -287,7 +373,13 @@ public class Main {
         		+ "</p>year: " + req.queryParams("year") 
         		+ "</p>Género: " + req.queryParams("genres")
         		+ "</p>Actor: " + req.queryParams("actor");
-        	return result;	
+        	insertFilm(connection, req.queryParams("film")
+        			,req.queryParams("year"), req.queryParams("genres"));
+        	String title_ID = selectTitle_ID(connection, "movies", req.queryParams("film"), req.queryParams("year"), req.queryParams("genres"));
+        	insertActor(connection, req.queryParams("actor"));
+        	String name_ID = selectName_ID(connection, "workers", req.queryParams("actor"));
+        	//insertWorks_In(connection, title_ID, name_ID);
+        	return result;
         });
         
         // Recurso /filter encargado de la funcionalidad del filtrado
