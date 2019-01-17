@@ -434,6 +434,13 @@ public class Main {
         		"<input type='text' name='film' id='film'> " +
         		"<input type='submit' value='Enviar'>" +
     		"</form>" +
+        	"<hr>" +
+    		"<h4>2. Filtrar por año de estreno de la película.</h4>" +
+        	"<form action='/filter_year' method='post'>" +
+    			"<label for='year'>Año de la película que desea buscar: </label>" + 
+        		"<input type='text' name='year' id='year'> " +
+        		"<input type='submit' value='Enviar'>" +
+            "</form>" +
         	"<hr>"
         );
         
@@ -472,6 +479,9 @@ public class Main {
         	return tabla;
         });
         
+        post("/filter_year", (req, res) ->
+    		"Has buscado por el año:" + req.queryParams("year")
+        );
         
         get("/distance", (req, res) -> {
         	String form = 
