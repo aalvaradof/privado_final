@@ -313,7 +313,7 @@ public class Main {
     					"<button type='submit'>Add Films</button>" +
     				"</div>" +
     			"</form>" +
-    			"<a href='/filter'>Filtrado</a>" +
+    			"<a href='/filter'>Búsqueda de películas</a>" +
     			"<br><br>" + 
 				"<a href= '/distance'>Distancia entre actores, películas, directores...<a/>" +
     		"</body></html>";
