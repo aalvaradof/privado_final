@@ -423,13 +423,18 @@ public class Main {
         	return result;	
         });
         
-        // Recurso /filter encargado de la funcionalidad del filtrado
+        // Recurso /filter encargado de la funcionalidad del filtrado de películas
         get("/filter", (req, res) ->
+    		"<h1>Búsqueda personalizada de películas</h1>" + 
+    		"<p>Elija el criterio por el que desea filtrar en nuestra base de datos.</p>" +
+    		"<hr>" +
+    		"<h4>1. Filtrar por nombre de la película.</h4>" +
         	"<form action='/filter_film' method='post'>" +
         		"<label for='film'>Película que desea buscar: </label>" + 
         		"<input type='text' name='film' id='film'> " +
         		"<input type='submit' value='Enviar'>" +
-    		"</form>"
+    		"</form>" +
+        	"<hr>"
         );
         
         post("/filter_film", (req, res) -> {
