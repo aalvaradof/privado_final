@@ -456,8 +456,6 @@ public class Main {
         	String puntuacionMedia = "puntuacion media de prueba";
         	String numVotos = "numero de votos de prueba";
         	String generos = "generos de prueba";
-        	String puntuacion = "puntuacion";
-        	String comentario = "Comentario";
         	
         	String tabla = "<table border=2" +
         						"<tr>" +
@@ -467,9 +465,6 @@ public class Main {
           							"<th>Puntuación media</th>" +
           							"<th>Número de votos</th>" +
           							"<th>Géneros</th>" +
-          							"<th>Puntuación</th>" +
-          							"<th>Comentario</th>" +
-        						"</tr>" +
         						"<tr>" +
         							"<td>" + titulo + "</td>" +
         							"<td>" + año + "</td>" +
@@ -477,12 +472,18 @@ public class Main {
         							"<td>" + puntuacionMedia + "</td>" +
         							"<td>" + numVotos + "</td>" +
         							"<td>" + generos + "</td>" +
-        							"<td>" + puntuacion + "</td>" +
-        							"<td>" + comentario + "</td>" +
 
         						"</tr>" +
         					"</table>";
         	return tabla;
+        	
+        	<H2>Botones genéricos</H2>    
+            <FORM name="validacion" action="https://pfinalisi.herokuapp.com/" method="POST" target="resultado">
+              <P>El campo sólo permite un número del 1 al 5:  <INPUT type="text" name="entrada">        
+              <INPUT type="button" value="Validar y enviar" onClick="validate(entrada)"></P>
+            </FORM>
+        	
+        	
         });
         
         post("/filter_year", (req, res) ->
